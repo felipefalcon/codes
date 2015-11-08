@@ -1,0 +1,78 @@
+//=============================================================================
+// Run++.js
+// Version: 1.0.0
+//=============================================================================
+
+/*:
+ * @plugindesc Running progressively.
+ * @author FelipeFalcon
+ *
+ * @param Time to increase
+ * @desc Default = 0.0008
+ * @default 0.0008
+ *
+ * @param Initial running speed
+ * @desc Default = 0.65
+ * @default 0.65
+ *
+ * @param Velocity Max
+ * @desc Default = 1.3
+ * @default 1.3
+ */
+ 
+(function() {
+	
+	var parameters = PluginManager.parameters('Run++');
+    var valueP = Number(parameters['Time to increase'] || 0.0008);
+	var valueM = Number(parameters['Velocity Max'] || 1.5);
+	var runMoreP = Number(parameters['Initial running speed'] || 0.65);
+	var runMore = this.runMoreP || 0.65;
+	
+	Game_CharacterBase.prototype.initialize = function() {
+    this.initMembers();
+	this.parameters = PluginManager.parameters('Run++');
+    this.valueP = Number(parameters['Time to increase'] || 0.0008);
+	this.valueM = Number(parameters['Velocity Max'] || 1);
+	this.runMoreP = Number(parameters['Initial running speed'] || 0.65);
+	this.runMore = this.runMoreP || 0.65;
+};
+	
+Game_CharacterBase.prototype.realMoveSpeed = function() {
+return this._moveSpeed + (this.isDashing() ? this.runMore : 0);	
+};
+
+Game_Player.prototype.update = function(sceneActive) {
+    var lastScrolledX = this.scrolledX();
+    var lastScrolledY = this.scrolledY();
+    var wasMoving = this.isMoving();
+    this.updateDashing();
+    if (sceneActive) {
+		this.runM()
+        this.moveByInput();
+    }else{
+	this.runMore = this.runMoreP;	
+	}
+    Game_Character.prototype.update.call(this);
+    this.updateScroll(lastScrolledX, lastScrolledY);
+    this.updateVehicle();
+    if (!this.isMoving()) {
+        this.updateNonmoving(wasMoving);
+    }
+    this._followers.update();
+};
+
+Game_Player.prototype.runM = function() {
+	if(this.isDashButtonPressed()&&this.isMoving()){
+		if(this.runMore <= this.valueM / 100 * 85){
+		return this.runMore += this.valueP;
+		}
+		if(this.runMore > this.valueM / 100 * 85 && this.runMore <= this.valueM){
+		return this.runMore += this.valueP / 2;
+		}
+	}
+	if(!this.isDashButtonPressed()){
+		return this.runMore = this.runMoreP;
+	}
+};
+
+})();
