@@ -306,6 +306,7 @@ class Scene_Title
     imgs_comoj = Configs_Title::COMOJ_IMGS.length
     img_s = 0
     count = 0
+    @sprite_op1.opacity = @sprite_op2.opacity = @sprite_op3.opacity = @sprite_op4.opacity = @sprite_op5.opacity = 0
      loop do
        @sprite.ox -= 1
        count += 1
@@ -325,12 +326,14 @@ class Scene_Title
        end
        Graphics.update
        Input.update
-       if Input.trigger?(Input::C) && img_s < imgs_comoj && count > 70
+       if Input.trigger?(Input::C) && img_s < imgs_comoj && count > 50
        img_s += 1
        count = 0
        end
        break if img_s == imgs_comoj && @sprite_op6.opacity == 0 && @sprite_op7.opacity == 0
      end
+     @sprite_op1.opacity = @sprite_op2.opacity = @sprite_op4.opacity = @sprite_op5.opacity = 90
+     @sprite_op3.opacity = 255
   end
   
   #--------------------------------------------------------------------------
